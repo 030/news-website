@@ -35,5 +35,10 @@ aws apigateway test-invoke-method --rest-api-id REST_API_ID --resource-id RESOUR
 #### POST
 
 ```
-aws apigateway test-invoke-method --rest-api-id REST_API_ID --resource-id RESOURCE_ID --http-method "POST" --path-with-query-string "/news" --body file://tests/news1.json
+aws apigateway test-invoke-method --rest-api-id REST_API_ID --resource-id RESOURCE_ID --headers "Content-Type=application/json" --http-method "POST" --path-with-query-string "/news" --body file://tests/news1.json
 ```
+
+## Resources
+
+* <https://www.alexedwards.net/blog/serverless-api-with-go-and-aws-lambda/>
+* <https://docs.aws.amazon.com/cli/latest/reference/apigateway/test-invoke-method.html/>

@@ -112,5 +112,5 @@ func clientError(status int) (events.APIGatewayProxyResponse, error) {
 }
 
 func main() {
-	lambda.Start(show)
+	lambda.Start(router)
 }
