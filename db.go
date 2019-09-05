@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -34,4 +36,25 @@ func getItem(title string) (*news, error) {
 	}
 
 	return n, nil
+}
+
+func putItem(n *news) error {
+	fmt.Print("CP-DB-40")
+	input := &dynamodb.PutItemInput{
+		TableName: aws.String("news"),
+		Item: map[string]*dynamodb.AttributeValue{
+			"title": {
+				S: aws.String(n.Title),
+			},
+			"description": {
+				S: aws.String(n.Description),
+			},
+			"date": {
+				S: aws.String(n.Date),
+			},
+		},
+	}
+
+	_, err := db.PutItem(input)
+	return err
 }
