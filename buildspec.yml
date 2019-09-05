@@ -28,7 +28,7 @@ phases:
       # - command
   build:
     commands:
-      # - command
+      - go test -cover
       # - command
   #post_build:
     #commands:
