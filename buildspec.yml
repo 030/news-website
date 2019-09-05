@@ -10,6 +10,9 @@ version: 0.2
   #git-credential-helper: yes
 
 phases:
+  install:
+    runtime-versions:
+      java: openjdk8
   #install:
     #If you use the Ubuntu standard image 2.0 or later, you must specify runtime-versions.
     #If you specify runtime-versions and use an image other than Ubuntu standard image 2.0, the build fails.
