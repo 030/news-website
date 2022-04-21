@@ -1,0 +1,10 @@
+---
+Parameters:
+  RepositoryName:
+    Type: String
+    Description: Enter the repository name.
+Resources:
+  CodeCommitRepo:
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryName: !Ref RepositoryName
