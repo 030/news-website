@@ -1,0 +1,60 @@
+---
+app: aws-golang-rest-api-with-dynamodb
+service: aws-golang-rest-api-with-dynamodb
+
+frameworkVersion: '>=2.24.0'
+
+provider:
+  name: aws
+  runtime: go1.x
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+          Resource: 'arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}'
+
+functions:
+  post:
+    handler: bin/post
+    package:
+      include:
+        - ./bin/post
+    events:
+      - http:
+          path: newsitem
+          method: post
+          cors: true
+  get:
+    handler: bin/get
+    package:
+      include:
+        - ./bin/get
+    events:
+      - http:
+          path: news
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    TodosDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
