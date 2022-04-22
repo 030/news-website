@@ -2,29 +2,39 @@
 
 Scalable news website on AWS.
 
-## Getting started
-
-Create a code commit repository:
+## Build
 
 ```bash
-aws cloudformation \
-  --profile training \
-  --region eu-central-1 create-stack \
-  --stack-name code-commit-playground \
-  --template-body file:///${PWD}/cf.yaml \
-  --parameters ParameterKey=RepositoryName,ParameterValue=playground
+for b in get post; do env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/${b} cmd/${b}/main.go; done
 ```
 
-Store the code:
+## Deploy
 
 ```bash
-git clone https://git-codecommit.eu-central-1.amazonaws.com/v1/repos/playground
-cd playground
-for f in $(ls ../ | grep -v playground); do cp -r ../${f} .; done
-cp ../.gitignore .
-git config user.name hello
-git config user.email world
-git add .
-git commit -m "helloworld"
-git push origin master
+sls deploy --verbose --aws-profile training --region eu-central-1 --stage dev
 ```
+
+## Testing
+
+Post:
+
+```bash
+curl --request POST \
+  --url https://brzqxi4pp2.execute-api.eu-central-1.amazonaws.com/dev/newsitem \
+  --header 'Content-Type: application/json' \
+  --data '{
+  "Title": "Hello",
+  "Description": "World"
+}'
+```
+
+Get:
+
+```bash
+curl --request GET \
+  --url some-url/dev/news
+```
+
+## Sources
+
+* <https://github.com/serverless/examples/tree/v3/aws-golang-rest-api-with-dynamodb>
