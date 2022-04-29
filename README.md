@@ -40,7 +40,7 @@ curl --request GET \
 ## Cleanup
 
 Deletion of the CloudFormation stack does not seem to remove the DynamoDB.
-Remove it manually to safe costs.
+Remove it manually to save costs.
 
 ## Sources
 
