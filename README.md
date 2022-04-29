@@ -2,10 +2,12 @@
 
 Scalable news website on AWS.
 
-## Build
+## Getting started
 
 ```bash
-for b in get post; do env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o bin/${b} cmd/${b}/main.go; done
+aws s3 mb s3://testi324332524523432 --profile=training --region=eu-central-1
+zip bla.zip -r cmd go.mod go.sum buildspec.yml
+aws s3 cp bla.zip s3://testi324332524523432/bla.zip --profile=training --region=eu-central-1
 ```
 
 ## Deploy
@@ -20,7 +22,7 @@ Post:
 
 ```bash
 curl --request POST \
-  --url https://brzqxi4pp2.execute-api.eu-central-1.amazonaws.com/dev/newsitem \
+  --url https://f2u5ilc7sj.execute-api.eu-central-1.amazonaws.com/dev/newsitem \
   --header 'Content-Type: application/json' \
   --data '{
   "Title": "Hello",
@@ -32,8 +34,13 @@ Get:
 
 ```bash
 curl --request GET \
-  --url some-url/dev/news
+  --url https://f2u5ilc7sj.execute-api.eu-central-1.amazonaws.com/dev/news
 ```
+
+## Cleanup
+
+Deletion of the CloudFormation stack does not seem to remove the DynamoDB.
+Remove it manually to safe costs.
 
 ## Sources
 

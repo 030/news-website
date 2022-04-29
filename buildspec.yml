@@ -3,6 +3,6 @@ version: 0.2
 phases:
   build:
     commands:
-      - cd cmd/news-website
-      - go build
+      - for b in get post; do go build -ldflags="-s -w" -o bin/${b} cmd/${b}/main.go; done
       - ls
+      # - sls deploy --verbose --stage dev
