@@ -2,6 +2,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
@@ -19,6 +21,12 @@ type Item struct {
 	Id          string `json:"id,omitempty"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
+	Date        string `json:"date,omitempty"`
+}
+
+func date() string {
+	now := time.Now()
+	return now.Format("2006-Jan-02 03:04:05.000 PM MST -07:00")
 }
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -50,6 +58,7 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		Id:          itemUuid,
 		Title:       itemStruct.Title,
 		Description: itemStruct.Description,
+		Date:        date(),
 	}
 
 	// Marshal to dynamobb item

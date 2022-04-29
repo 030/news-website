@@ -18,6 +18,7 @@ type Item struct {
 	Id          string `json:"id,omitempty"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
+	Date        string `json:"date"`
 }
 
 func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
