@@ -1,6 +1,6 @@
 ---
-app: aws-golang-rest-api-with-dynamodb
-service: aws-golang-rest-api-with-dynamodb
+app: news-website
+service: news-website
 
 frameworkVersion: '>=2.24.0'
 
@@ -58,3 +58,146 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+    SNS:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: testi
+    SNSSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: some-email-address
+        Protocol: Email
+        TopicArn: !Ref SNS
+    CodeCommit:
+      Type: AWS::CodeCommit::Repository
+      Properties:
+        RepositoryName: news-website
+        Code:
+          S3:
+            Bucket: testi324332524523432
+            Key: bla.zip
+        Triggers:
+          - Branches:
+              - main
+            DestinationArn: !Ref SNS
+            Events:
+              - updateReference
+            Name: testi
+    ManagedPolicy:
+      Type: AWS::IAM::ManagedPolicy
+      Properties:
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - 'logs:*'
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - 'codecommit:*'
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - 'codebuild:*'
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - 's3:*'
+              Resource: '*'
+        ManagedPolicyName: testi
+    Role:
+      Type: AWS::IAM::Role
+      DependsOn: ManagedPolicy
+      Properties:
+        AssumeRolePolicyDocument:
+          {
+            'Version': '2012-10-17',
+            'Statement':
+              [
+                {
+                  'Effect': 'Allow',
+                  'Action': ['sts:AssumeRole'],
+                  'Principal':
+                    {
+                      'Service':
+                        [
+                          'codebuild.amazonaws.com',
+                          'codepipeline.amazonaws.com',
+                        ],
+                    },
+                },
+              ],
+          }
+        ManagedPolicyArns:
+          - !Ref ManagedPolicy
+        RoleName: testi
+    CodeBuild:
+      Type: AWS::CodeBuild::Project
+      DependsOn: Role
+      Properties:
+        Artifacts:
+          Type: no_artifacts
+        Environment:
+          Type: LINUX_CONTAINER
+          ComputeType: BUILD_GENERAL1_SMALL
+          Image: aws/codebuild/standard:4.0
+        Name: testi
+        ServiceRole: testi
+        Source:
+          Location: https://git-codecommit.eu-central-1.amazonaws.com/v1/repos/news-website
+          Type: CODECOMMIT
+        SourceVersion: refs/heads/main
+    CodePipeline:
+      Type: AWS::CodePipeline::Pipeline
+      Properties:
+        RoleArn: !GetAtt Role.Arn
+        Stages:
+          - Name: Source
+            Actions:
+              - Name: Source
+                ActionTypeId:
+                  Category: Source
+                  Owner: AWS
+                  Version: 1
+                  Provider: CodeCommit
+                OutputArtifacts:
+                  - Name: CODE_ZIP
+                Configuration:
+                  RepositoryName: news-website
+                  BranchName: main
+                  PollForSourceChanges: 'false'
+          - Name: Build
+            Actions:
+              - Name: Build
+                InputArtifacts:
+                  - Name: CODE_ZIP
+                ActionTypeId:
+                  Category: Build
+                  Owner: AWS
+                  Version: 1
+                  Provider: CodeBuild
+                Configuration:
+                  ProjectName: testi
+        ArtifactStore:
+          Type: S3
+          Location: testi324332524523432
+  Outputs:
+    SNS:
+      Value:
+        Ref: SNS
+    SNSSubscription:
+      Value:
+        Ref: SNSSubscription
+    CodeCommit:
+      Value:
+        Ref: CodeCommit
+    ManagedPolicy:
+      Value:
+        Ref: ManagedPolicy
+    Role:
+      Value:
+        Ref: Role
+    CodeBuild:
+      Value:
+        Ref: CodeBuild
